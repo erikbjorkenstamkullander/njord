@@ -250,7 +250,7 @@ function njordSidebar(nav, co) {
   }).join('');
 
   return '<div class="nj-sb">' +
-    '<div class="nj-logo">' + _COMPASS + '<div><div class="nj-logo-name">Njord</div><div class="nj-logo-sub">by Aderian</div></div></div>' +
+    '<div class="nj-logo">' + _COMPASS + '<div><div class="nj-logo-name">Njord</div><div class="nj-logo-sub">by Explore the sea</div></div></div>' +
     navHtml +
     '<div style="flex:1"></div>' +
     '<div class="nj-cos">' + coButtons + '</div>' +
