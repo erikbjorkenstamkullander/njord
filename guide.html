@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Njord n8n Guide</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f4f8; color: #0c0d12; line-height: 1.6; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 48px 32px; }
+h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 8px; }
+h2 { font-size: 18px; font-weight: 600; margin: 36px 0 10px; }
+h3 { font-size: 14px; font-weight: 600; margin: 20px 0 6px; color: #323542; }
+p { font-size: 14px; color: #484c5e; margin-bottom: 12px; }
+.sub { font-size: 15px; color: #63677d; margin-bottom: 32px; }
+pre { background: #0c0d12; color: #c5cafd; border-radius: 10px; padding: 18px 20px; font-size: 12.5px; overflow-x: auto; margin: 10px 0 20px; line-height: 1.65; }
+code { font-family: 'Menlo', 'Consolas', monospace; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: #eef0ff; color: #1e28f5; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px; }
+.card { background: #fff; border: 1px solid #e8eaef; border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+.card h3 { margin-top: 0; }
+.fn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fn-card { background: #f9f9fb; border: 1px solid #e8eaef; border-radius: 8px; padding: 14px 16px; }
+.fn-name { font-size: 13px; font-weight: 700; font-family: monospace; color: #1e28f5; margin-bottom: 4px; }
+.fn-desc { font-size: 12px; color: #63677d; }
+.step { display: flex; gap: 14px; margin-bottom: 20px; }
+.step-num { width: 28px; height: 28px; border-radius: 50%; background: #1e28f5; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-body h3 { margin-top: 0; }
+.divider { height: 1px; background: #e8eaef; margin: 32px 0; }
+.tag { display: inline-block; background: #ebebf3; color: #484c5e; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <svg width="36" height="36" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#1a1a2e"/><polygon points="20,5 22.5,17 20,15 17.5,17" fill="#fff"/><polygon points="20,35 22.5,24 20,26 17.5,24" fill="#04707b"/><polygon points="5,20 17,17.5 15,20 17,22.5" fill="#fff" opacity="0.65"/><polygon points="35,20 23,17.5 25,20 23,22.5" fill="#fff" opacity="0.65"/><circle cx="20" cy="20" r="4" fill="#04707b"/><circle cx="20" cy="20" r="2" fill="#fff"/><path d="M9 30 Q14.5 27 20 30 Q25.5 33 31 30" stroke="#04707b" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    <div>
+      <h1 style="margin-bottom:0">Njord n8n Kit</h1>
+      <div class="sub" style="margin-bottom:0">Snabbguide — Aderian CC IT</div>
+    </div>
+  </div>
+
+  <p style="font-size:15px;color:#484c5e;margin-bottom:32px">
+    Klistrar du in <code>njord-kit.js</code> i en n8n Code-nod får du en komplett layout-funktion
+    (<code>njordPage()</code>) och en uppsättning komponentfunktioner för att bygga snygga
+    Business Central-sidor utan att skriva CSS.
+  </p>
+
+  <div class="divider"></div>
+
+  <h2>Snabbstart — 3 steg</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Klistra in kitet i en Code-nod</h3>
+      <p>Kopiera hela <code>njord-kit.js</code> och klistra in i din Code-nod (JavaScript-läge).
+      Filen fungerar som-den-är och returnerar en startsida direkt.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Hämta data i föregående nod</h3>
+      <p>Koppla din HTTP Request-nod (webhook till BC API) före Code-noden.
+      Data finns sedan i <code>$input.first().json</code>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Bygg din sida med komponenterna</h3>
+      <p>Skapa <code>content</code>-strängen med hjälp av funktionerna nedan, anropa
+      <code>njordPage()</code> och returnera <code>[{ json: { html } }]</code>.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <h2>Tillgängliga funktioner</h2>
+
+  <div class="fn-grid">
+    <div class="fn-card">
+      <div class="fn-name">njordPage({ nav, breadcrumbs, content, title })</div>
+      <div class="fn-desc">Genererar en komplett HTML-sida med sidebar, topbar och innehåll. Alltid sista anropet.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordSidebar(nav, activeCo)</div>
+      <div class="fn-desc">Sidebar med logga, nav-grupper och company-switcher.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordTopbar(breadcrumbs)</div>
+      <div class="fn-desc">Topbar med brödsmula-navigation och bolagsindikator.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordStatGrid([ { label, value, sub } ])</div>
+      <div class="fn-desc">4-kolumnigt grid med statistikkort.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordQuickGrid([ { label, href, iconKey } ])</div>
+      <div class="fn-desc">Snabbvalskort i 4-kolumnigt grid. iconKey: customers, orders, invoices, crm, contracts, m.fl.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordTable(cols, rows)</div>
+      <div class="fn-desc">Stilad datatabell. Klickbara rader med <code>_href</code> i raden.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordBadge(text, type, withDot)</div>
+      <div class="fn-desc">Status-badge. type: success | warning | danger | info | neutral</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordAlert(text, type)</div>
+      <div class="fn-desc">Infomeddelandefält. Samma typ-alternativ som badge.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordBtn(label, href, variant, iconKey?)</div>
+      <div class="fn-desc">Länkknapp. variant: primary | secondary | outline</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">njordPageHeader(title, sub?, actions?)</div>
+      <div class="fn-desc">Sidhuvud med titel, undertext och valfria action-knappar.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <h2>Tillgängliga ikonnycklar</h2>
+  <p>Använd dessa som <code>iconKey</code> i nav-items och quick-grid:</p>
+  <div style="margin-bottom:20px">
+    <span class="tag">customers</span><span class="tag">quotes</span><span class="tag">orders</span>
+    <span class="tag">invoices</span><span class="tag">credits</span><span class="tag">contracts</span>
+    <span class="tag">overdue</span><span class="tag">serial</span><span class="tag">purchases</span>
+    <span class="tag">crm</span><span class="tag">plus</span><span class="tag">search</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <h2>Exempel — Listvy (Kunder)</h2>
+  <p>Ersätt startsidans <code>homeContent</code> och <code>njordPage()</code>-anropet längst ner i kitet med:</p>
+
+<pre><code>// Data från föregående nod (HTTP Request → BC API)
+const customers = $input.first().json.value || [];
+
+const rows = customers.map(c => ({
+  name:    c.displayName,
+  no:      c.number,
+  city:    c.city || '—',
+  balance: (c.balance || 0).toLocaleString('sv-SE') + ' kr',
+  status:  njordBadge(
+    c.blocked ? 'Spärrad' : 'Aktiv',
+    c.blocked ? 'danger'  : 'success',
+    true
+  ),
+  _href: `/webhook/bc-customer?id=${c.id}&company=${co}`,
+}));
+
+const content = `
+  ${njordPageHeader(
+    'Kunder',
+    company.name,
+    njordBtn('Ny kund', '#', 'primary', 'plus')
+  )}
+  ${njordTable(
+    [
+      { label: 'Namn',   key: 'name',    width: '35%' },
+      { label: 'Nr',     key: 'no',      width: '10%' },
+      { label: 'Ort',    key: 'city',    width: '20%' },
+      { label: 'Saldo',  key: 'balance', width: '20%' },
+      { label: 'Status', key: 'status',  width: '15%' },
+    ],
+    rows
+  )}
+`;
+
+// Markera rätt nav-item som aktiv
+const nav = DEFAULT_NAV.map(g => ({
+  ...g,
+  items: g.items.map(i => ({ ...i, active: i.iconKey === 'customers' }))
+}));
+
+const html = njordPage({
+  nav,
+  breadcrumbs: [{ label: 'Kunder' }],
+  content,
+  title: 'Kunder',
+});
+
+return [{ json: { html } }];</code></pre>
+
+  <div class="divider"></div>
+
+  <h2>Bolag & accentfärger</h2>
+  <p>Bolaget styrs av query-parametern <code>?company=</code>:</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+    <div class="card" style="border-left:3px solid #0d8a7a">
+      <h3 style="margin-top:0">kullander</h3>
+      <code style="font-size:12px;color:#0d8a7a">#0d8a7a</code>
+    </div>
+    <div class="card" style="border-left:3px solid #2563eb">
+      <h3 style="margin-top:0">dnsit</h3>
+      <code style="font-size:12px;color:#2563eb">#2563eb</code>
+    </div>
+    <div class="card" style="border-left:3px solid #1e28f5">
+      <h3 style="margin-top:0">ccit</h3>
+      <code style="font-size:12px;color:#1e28f5">#1e28f5</code>
+    </div>
+  </div>
+  <p>Kitet läser automatiskt <code>$input.first().json.query?.company</code> och väljer rätt färg.</p>
+
+</div>
+</body>
+</html>
